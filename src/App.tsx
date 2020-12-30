@@ -1,30 +1,47 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory, withRouter } from 'react-router-dom';
 import { UserList } from './components/users/UserList';
 import { Home } from './Home';
-import { Fabric, initializeIcons } from '@fluentui/react';
+import { Fabric, INavLink, INavLinkGroup, initializeIcons, Nav } from '@fluentui/react';
+import 'office-ui-fabric-react/dist/css/fabric.css';
 
 function App() {
+  const history = useHistory();
+  const onClick = (e?: React.MouseEvent<HTMLElement>, item?: INavLink) => {
+    e?.preventDefault();
+    history.push(item!!.url);
+  }
+  const navLinkGroups: INavLinkGroup[] = [
+    {
+      links: [
+        {name: 'Home', url: '/', onClick},
+        {name: 'Users', url: '/users', onClick},
+      ]
+    }
+  ];
   initializeIcons();
   return (
-    <Router>
       <Fabric>
-        <nav>
-          <Link to="/">Index</Link>
-          <Link to="/users">Users</Link>
-        </nav>
-        <Switch>
-          <Route path="/users">
-            <UserList />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
+        <div className="ms-Grid" dir="ltr">
+          <div className="ms-Grid-row">
+            <div className="ms-Grid-col ms-sm6 ms-md4 ms-lg2">
+              <Nav groups={navLinkGroups}/>
+            </div>
+            <div className="ms-Grid-col ms-sm6 ms-md8 ms-lg10">
+              <Switch>
+                <Route path="/users">
+                  <UserList/>
+                </Route>
+                <Route path="/">
+                  <Home/>
+                </Route>
+              </Switch>
+            </div>
+          </div>
+        </div>
       </Fabric>
-    </Router>
   );
 }
 
-export default App;
+export default withRouter(App);
