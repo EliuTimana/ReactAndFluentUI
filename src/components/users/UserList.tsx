@@ -1,6 +1,8 @@
-import { DetailsList, IColumn, Persona, PersonaSize } from '@fluentui/react';
+import { DetailsList, IColumn, Persona, PersonaSize, SelectionMode } from '@fluentui/react';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { User } from '../../models';
+import { Api } from '../../Api';
 
 interface Props {
 
@@ -25,6 +27,11 @@ export class UserList extends React.Component<Props, State>{
                 return `${item?.address.street} ${item?.address.suite}`;
             }
         },
+        {
+          minWidth: 100, key: 'edit', name: '', onRender(item?: User) {
+            return <Link to={`/users/${item?.id}/edit`}>Edit {item?.id}</Link>;
+          }, className: 'ms-textAlignCenter',
+        },
     ];
     constructor(props: Props) {
         super(props);
@@ -38,7 +45,7 @@ export class UserList extends React.Component<Props, State>{
     }
 
     private async fetchUsers() {
-        fetch('https://jsonplaceholder.typicode.com/users')
+        fetch(Api.Users)
             .then(response => response.json())
             .then((data: User[]) => {
                 this.setState({
@@ -50,7 +57,7 @@ export class UserList extends React.Component<Props, State>{
 
     render() {
         return (
-            <DetailsList items={this.state.items} columns={this.columns} />
+            <DetailsList items={this.state.items} columns={this.columns} selectionMode={SelectionMode.none}/>
         );
     }
 }

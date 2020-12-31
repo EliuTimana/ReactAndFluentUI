@@ -5,6 +5,7 @@ import { UserList } from './components/users/UserList';
 import { Home } from './Home';
 import { Fabric, INavLink, INavLinkGroup, initializeIcons, Nav } from '@fluentui/react';
 import 'office-ui-fabric-react/dist/css/fabric.css';
+import { UserEdit } from './components/users/UserEdit';
 
 function App() {
   const history = useHistory();
@@ -30,10 +31,11 @@ function App() {
             </div>
             <div className="ms-Grid-col ms-sm6 ms-md8 ms-lg10">
               <Switch>
-                <Route path="/users">
+                <Route path="/users/:id/edit" component={UserEdit}/>
+                <Route path="/users" exact>
                   <UserList/>
                 </Route>
-                <Route path="/">
+                <Route path="/" exact>
                   <Home/>
                 </Route>
               </Switch>
