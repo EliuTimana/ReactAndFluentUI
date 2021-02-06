@@ -53,7 +53,7 @@ export const UserList = () => {
         email: 'test@test.com',
         companyId: 1,
         phone: '988998895',
-        website: 'www.test.pe',
+        website: 'https://www.test.pe',
         avatar: Logo
       };
       await UsersService.saveUser(newUser);
