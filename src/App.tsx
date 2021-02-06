@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import './App.scss';
 import { Route, Switch, useHistory, withRouter } from 'react-router-dom';
 import { UserList } from './components/users/UserList';
 import { Home } from './Home';
