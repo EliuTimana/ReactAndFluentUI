@@ -1,4 +1,4 @@
-import { User } from '../models';
+import { User } from "../models";
 
 export class UsersService {
   public static getAllUsers(): Promise<User[]> {
@@ -14,8 +14,16 @@ export class UsersService {
     return user ? user : null;
   }
 
+  public static async updateUser(user: User) {
+    let users = await this.getAllUsers();
+    const index = users.findIndex(x => x.id === user.id);
+    users[index] = user;
+    localStorage.setItem('users', JSON.stringify(users));
+  }
+
   public static async saveUser(user: User) {
     let users = await this.getAllUsers();
+    user.id = users.length === 0 ? 1 : Math.max(...users.map(x => x.id)) + 1;
     users.push(user);
     localStorage.setItem('users', JSON.stringify(users));
   }

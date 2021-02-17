@@ -1,9 +1,4 @@
-export interface Company {
-  id: number;
-  name: string;
-}
-
-export interface User {
+export default interface User {
   id: number;
   name: string;
   avatar?: string;

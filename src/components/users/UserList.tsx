@@ -22,7 +22,7 @@ export const UserList = () => {
     {
       minWidth: 200, key: 'name', name: 'Name',
       onRender(item?: User) {
-        return <Persona size={PersonaSize.size24} text={item?.name} imageUrl={item?.avatar}/>
+        return <Persona size={PersonaSize.size24} text={item?.name}/>
       }
     },
     {minWidth: 200, key: 'email', name: 'Email', fieldName: 'email'},
@@ -45,7 +45,6 @@ export const UserList = () => {
 
   const fetchUsers = async () => {
     const data = await UsersService.getAllUsers();
-    console.log(data)
     if (data.length === 0) {
       const newUser = {
         id: 1,
@@ -67,6 +66,11 @@ export const UserList = () => {
     setModalVisible(true);
   }
 
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    fetchUsers();
+  }
+
   const commandBarItems: ICommandBarItemProps[] = [
     {
       key: 'new', text: 'New', iconProps: {iconName: 'Add'}, onClick: () => {
@@ -79,7 +83,7 @@ export const UserList = () => {
       <>
         <CommandBar items={commandBarItems}/>
         <DetailsList items={users} columns={columns} selectionMode={SelectionMode.none}/>
-        <UserEdit visible={modalVisible} userId={userId} onClose={() => setModalVisible(false)}/>
+        {modalVisible && <UserEdit userId={userId} onClose={() => handleCloseModal()}/>}
       </>
   );
 }

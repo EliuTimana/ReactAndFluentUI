@@ -1,9 +1,10 @@
 import { IconButton, Modal, PrimaryButton, Stack, TextField } from '@fluentui/react';
 import { Field, Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { User } from '../../models';
 import { UsersService } from '../../services/UsersService';
 import * as yup from 'yup';
+import { User } from '../../models';
+
 /*interface Params {
   id: string;
 }
@@ -11,16 +12,17 @@ import * as yup from 'yup';
 interface Props extends RouteComponentProps<Params> {
   userId: number;
 }*/
+
 interface Props {
   userId: number | null;
-  visible: boolean;
 
   onClose(): void;
 }
 
-export const UserEdit = ({userId, visible, onClose}: Props) => {
+export const UserEdit = ({userId, onClose}: Props) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [visible, setVisible] = useState(true);
 
   const fetchUser = async () => {
     setLoading(true);
@@ -34,15 +36,29 @@ export const UserEdit = ({userId, visible, onClose}: Props) => {
     }
   }
 
+  const saveUser = async (formData: User) => {
+    try {
+      if (!userId) {
+        await UsersService.saveUser({...formData});
+      } else {
+        await UsersService.updateUser({...formData, id: userId});
+      }
+      setVisible(false);
+      onClose();
+    } catch (e) {
+
+    }
+  }
+
   useEffect(() => {
     fetchUser();
   }, [userId]);
 
   const schema = yup.object().shape({
-    name:yup.string().required(),
-    email:yup.string().required().email(),
-    website:yup.string().required().url(),
-    phone:yup.string().required(),
+    name: yup.string().required(),
+    email: yup.string().required().email(),
+    website: yup.string().required().url(),
+    phone: yup.string().required(),
   })
 
   return <div>
@@ -63,10 +79,8 @@ export const UserEdit = ({userId, visible, onClose}: Props) => {
                 validationSchema={schema}
                 onSubmit={
                   (values, {setSubmitting}) => {
-                    setTimeout(() => {
-                      alert(JSON.stringify(values, null, 2));
-                      setSubmitting(false);
-                    }, 400);
+                    saveUser(values as User);
+                    setSubmitting(false);
                   }
                 }>
               {
@@ -74,9 +88,12 @@ export const UserEdit = ({userId, visible, onClose}: Props) => {
                     <Form noValidate>
                       <Stack tokens={{childrenGap: 15}}>
                         <Field name="name" label="Name" required errorMessage={errors.name} as={TextField}/>
-                        <Field name="email" label="Email" required type="email" errorMessage={errors.email} as={TextField}/>
-                        <Field name="website" label="Website" required type="url" errorMessage={errors.website} as={TextField}/>
-                        <Field name="phone" label="Phone" required type="tel" errorMessage={errors.phone} as={TextField}/>
+                        <Field name="email" label="Email" required type="email" errorMessage={errors.email}
+                               as={TextField}/>
+                        <Field name="website" label="Website" required type="url" errorMessage={errors.website}
+                               as={TextField}/>
+                        <Field name="phone" label="Phone" required type="tel" errorMessage={errors.phone}
+                               as={TextField}/>
                         <PrimaryButton text="Save" type="submit" disabled={isSubmitting}/>
                       </Stack>
                     </Form>
