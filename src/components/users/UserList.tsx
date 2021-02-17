@@ -8,7 +8,8 @@ import {
   IDialogContentProps,
   Persona,
   PersonaSize,
-  SelectionMode
+  SelectionMode,
+  ShimmeredDetailsList
 } from '@fluentui/react';
 import React, { useEffect, useState } from 'react';
 import { User } from '../../models';
@@ -19,6 +20,7 @@ import { Alert } from '../common/Alert';
 
 export const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
@@ -69,6 +71,7 @@ export const UserList = () => {
   }, []);
 
   const fetchUsers = async () => {
+    setLoading(true);
     const data = await UsersService.getAllUsers();
     if (data.length === 0) {
       const newUser = {
@@ -82,8 +85,10 @@ export const UserList = () => {
       };
       await UsersService.saveUser(newUser);
       setUsers([newUser]);
+      setLoading(false);
     } else {
       setUsers(data);
+      setLoading(false);
     }
   }
   const openModal = (id: number | null = null) => {
@@ -128,13 +133,13 @@ export const UserList = () => {
   return (
       <>
         <CommandBar items={commandBarItems}/>
-        <DetailsList items={users} columns={columns} selectionMode={SelectionMode.none}/>
+        <ShimmeredDetailsList items={users} columns={columns} selectionMode={SelectionMode.none} enableShimmer={loading} />
         {modalVisible && <UserEdit userId={userId} onClose={() => handleCloseModal()}/>}
-        {modalDeleteVisible && <Alert visible={modalDeleteVisible}
-                                      dialogContentProps={dialogContentProps}
-                                      loading={deleting}
-                                      onCancel={() => setModalDeleteVisible(false)}
-                                      onConfirm={handleConfirmDelete}/>}
+        <Alert visible={modalDeleteVisible}
+               dialogContentProps={dialogContentProps}
+               loading={deleting}
+               onCancel={() => setModalDeleteVisible(false)}
+               onConfirm={handleConfirmDelete}/>
       </>
   );
 }
