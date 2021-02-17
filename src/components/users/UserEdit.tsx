@@ -1,6 +1,6 @@
-import { IconButton, Modal, PrimaryButton, Stack, TextField } from '@fluentui/react';
+import { IconButton, Modal, PrimaryButton, ProgressIndicator, Stack, TextField } from '@fluentui/react';
 import { Field, Form, Formik } from 'formik';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UsersService } from '../../services/UsersService';
 import * as yup from 'yup';
 import { User } from '../../models';
@@ -23,12 +23,19 @@ export const UserEdit = ({userId, onClose}: Props) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(true);
+  const formikRef = useRef<any>();
 
   const fetchUser = async () => {
     setLoading(true);
     if (userId) {
       const data = await UsersService.getUser(userId);
       setUser(data);
+      if (formikRef.current) {
+        formikRef.current?.setFieldValue('name', data?.name)
+        formikRef.current?.setFieldValue('email', data?.email)
+        formikRef.current?.setFieldValue('website', data?.website)
+        formikRef.current?.setFieldValue('phone', data?.phone)
+      }
       setLoading(false);
     } else {
       setUser(null);
@@ -67,14 +74,13 @@ export const UserEdit = ({userId, onClose}: Props) => {
         <span className="ms-font-xl-plus">{userId === null ? 'Create User' : 'Edit User'}</span>
         <IconButton iconProps={{iconName: 'Cancel'}} onClick={() => onClose()} disabled={loading}/>
       </div>
-      {
-        !loading && <div className="p-3">
-            <Formik
+      <div className="p-3">
+        <Formik innerRef={formikRef}
                 initialValues={{
-                  name: user?.name,
-                  email: user?.email,
-                  website: user?.website,
-                  phone: user?.phone
+                  name: '',
+                  email: '',
+                  website: '',
+                  phone: '',
                 }}
                 validationSchema={schema}
                 onSubmit={
@@ -83,25 +89,25 @@ export const UserEdit = ({userId, onClose}: Props) => {
                     setSubmitting(false);
                   }
                 }>
-              {
-                ({isSubmitting, errors}) => (
-                    <Form noValidate>
-                      <Stack tokens={{childrenGap: 15}}>
-                        <Field name="name" label="Name" required errorMessage={errors.name} as={TextField}/>
-                        <Field name="email" label="Email" required type="email" errorMessage={errors.email}
-                               as={TextField}/>
-                        <Field name="website" label="Website" required type="url" errorMessage={errors.website}
-                               as={TextField}/>
-                        <Field name="phone" label="Phone" required type="tel" errorMessage={errors.phone}
-                               as={TextField}/>
-                        <PrimaryButton text="Save" type="submit" disabled={isSubmitting}/>
-                      </Stack>
-                    </Form>
-                )
-              }
-            </Formik>
-        </div>
-      }
+          {
+            ({isSubmitting, errors}) => (
+                <Form noValidate>
+                  {(loading || isSubmitting) && <ProgressIndicator/>}
+                  <Stack tokens={{childrenGap: 15}}>
+                    <Field disabled={isSubmitting || loading} name="name" label="Name" required errorMessage={errors.name} as={TextField}/>
+                    <Field disabled={isSubmitting || loading} name="email" label="Email" required type="email" errorMessage={errors.email}
+                           as={TextField}/>
+                    <Field disabled={isSubmitting || loading} name="website" label="Website" required type="url" errorMessage={errors.website}
+                           as={TextField}/>
+                    <Field disabled={isSubmitting || loading} name="phone" label="Phone" required type="text" errorMessage={errors.phone}
+                           as={TextField}/>
+                    <PrimaryButton text="Save" type="submit" disabled={isSubmitting || loading}/>
+                  </Stack>
+                </Form>
+            )
+          }
+        </Formik>
+      </div>
     </Modal>
   </div>;
 

@@ -32,7 +32,7 @@ export class UsersService {
     localStorage.setItem('users', JSON.stringify(users));
   }
 
-  private static async delayOperation(duration: number = 2000) {
+  private static async delayOperation(duration: number = 1500) {
     return new Promise<void>(resolve => {
       setTimeout(() => {
         resolve();
