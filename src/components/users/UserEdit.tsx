@@ -78,8 +78,8 @@ export const UserEdit = ({userId, onClose}: Props) => {
                 }}
                 validationSchema={schema}
                 onSubmit={
-                  (values, {setSubmitting}) => {
-                    saveUser(values as User);
+                  async (values, {setSubmitting}) => {
+                    await saveUser(values as User);
                     setSubmitting(false);
                   }
                 }>
