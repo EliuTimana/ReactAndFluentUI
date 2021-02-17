@@ -10,8 +10,8 @@ function App() {
   const navLinkGroups: INavLinkGroup[] = [
     {
       links: [
-        {name: 'Home', url: '/#/', key: 'home'},
-        {name: 'Users', url: '/#/users', key: 'users'},
+        {name: 'Home', url: '#/', key: 'home'},
+        {name: 'Users', url: '#/users', key: 'users'},
       ]
     }
   ];
