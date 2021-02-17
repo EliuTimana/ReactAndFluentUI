@@ -46,7 +46,7 @@ export const UserEdit = ({userId, visible, onClose}: Props) => {
   })
 
   return <div>
-    <Modal isOpen={visible}>
+    <Modal isOpen={visible} scrollableContentClassName="overflow-visible">
       <div className="d-flex justify-content-between p-3">
         <span className="ms-font-xl-plus">{userId === null ? 'Create User' : 'Edit User'}</span>
         <IconButton iconProps={{iconName: 'Cancel'}} onClick={() => onClose()} disabled={loading}/>
